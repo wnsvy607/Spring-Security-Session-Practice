@@ -1,21 +1,37 @@
 package com.jp.session.config;
 
+import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
+import org.springframework.security.config.annotation.web.configurers.LogoutConfigurer;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
+@EnableMethodSecurity
 @EnableWebSecurity
 public class WebSecurityConfig {
 
+
+	@Bean
+	public WebSecurityCustomizer ignoringCustomizer() {
+		return (web -> web
+			.ignoring().requestMatchers(PathRequest.toH2Console()));
+	}
+
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+
+		http.sessionManagement()
+			.maximumSessions(1)
+			.maxSessionsPreventsLogin(false)
+			.expiredUrl("/home?expired");
+
 		http
 			.authorizeHttpRequests(request -> request
 				.requestMatchers("/", "/home").permitAll()
@@ -23,22 +39,15 @@ public class WebSecurityConfig {
 			).formLogin(form -> form
 				.loginPage("/login")
 				.permitAll()
+				.loginProcessingUrl("/perform_login")
 			)
-			.logout(logout -> logout.permitAll());
+			.logout(LogoutConfigurer::permitAll);
 
 		return http.build();
 	}
-
 	@Bean
-	public UserDetailsService userDetailsService() {
-		UserDetails user =
-			User.withDefaultPasswordEncoder()
-				.username("user")
-				.password("password")
-				.roles("USER")
-				.build();
-
-		return new InMemoryUserDetailsManager(user);
+	public PasswordEncoder passwordEncoder() {
+		return new BCryptPasswordEncoder();
 	}
 }
 
