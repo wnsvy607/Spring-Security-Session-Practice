@@ -9,5 +9,12 @@
 <form th:action="@{/logout}" method="post">
     <input type="submit" value="Sign Out"/>
 </form>
+
+<button th:onclick="|location.href='@{/api/v1/user}'|">
+    USER
+</button>
+<button th:onclick="|location.href='@{/api/v1/admin}'|">
+    ADMIN
+</button>
 </body>
 </html>

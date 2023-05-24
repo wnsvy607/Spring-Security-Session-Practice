@@ -28,30 +28,30 @@ public class TestController {
 	}
 
 
-
-	@GetMapping("/token")
+	@PreAuthorize("hasRole('USER')")
+	@GetMapping("/user")
 	public String token(UsernamePasswordAuthenticationToken token) {
 		if(token.getPrincipal().getClass().isAssignableFrom(UserInfo.class)) {
 			UserInfo userInfo = (UserInfo) token.getPrincipal();
-			return userInfo.getNickname() + "\n"
+			return "일반 API\n" + userInfo.getNickname() + "\n"
 				+ token.getDetails();
 		}
 		return "the token's principal is not the instance of UserInfo.class";
 	}
 
-	@GetMapping("/admin")
 	@PreAuthorize("hasRole('ADMIN')")
+	@GetMapping("/admin")
 	public String admin(UsernamePasswordAuthenticationToken token) {
 		if(token.getPrincipal().getClass().isAssignableFrom(UserInfo.class)) {
 			UserInfo userInfo = (UserInfo) token.getPrincipal();
-			return userInfo.getNickname() + "\n"
+			return "관리자 API\n"+ userInfo.getNickname() + "\n"
 				+ token.getDetails();
 		}
 		return "the token's principal is not the instance of UserInfo.class";
 	}
 
 
-	@GetMapping("/info")
+	@GetMapping("/principal")
 	public String userInfo(@AuthenticationPrincipal UserInfo info) {
 		return info.toString();
 	}
