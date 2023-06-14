@@ -1,7 +1,7 @@
 package com.jp.session.controller;
 
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,7 +27,7 @@ public class TestController {
 
 	@PreAuthorize("hasRole('USER')")
 	@GetMapping("/user")
-	public String token(UsernamePasswordAuthenticationToken token) {
+	public String token(AbstractAuthenticationToken token) {
 		if(token.getPrincipal().getClass().isAssignableFrom(UserInfo.class)) {
 			UserInfo userInfo = (UserInfo) token.getPrincipal();
 			return "일반 API\n" + userInfo.getNickname() + "\n"
@@ -38,7 +38,7 @@ public class TestController {
 
 	@PreAuthorize("hasRole('ADMIN')")
 	@GetMapping("/admin")
-	public String admin(UsernamePasswordAuthenticationToken token) {
+	public String admin(AbstractAuthenticationToken token) {
 		if(token.getPrincipal().getClass().isAssignableFrom(UserInfo.class)) {
 			UserInfo userInfo = (UserInfo) token.getPrincipal();
 			return "관리자 API\n"+ userInfo.getNickname() + "\n"
