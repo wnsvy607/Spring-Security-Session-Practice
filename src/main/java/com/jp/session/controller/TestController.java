@@ -18,9 +18,6 @@ public class TestController {
 	@GetMapping("/test")
 	public String hello(HttpSession session) {
 		if (session != null) {
-			if(session.getAttribute("name") != null)
-				return (String) session.getAttribute("name");
-			session.setAttribute("name", "hello");
 			return session.getId();
 		}
 		return "new one";
